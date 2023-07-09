@@ -7,7 +7,7 @@ import Graphic from "@arcgis/core/Graphic.js";
 import ServiceAreaParameters from "@arcgis/core/rest/support/ServiceAreaParameters.js";
 import FeatureSet from "@arcgis/core/rest/support/FeatureSet.js";
 import * as serviceArea from "@arcgis/core/rest/serviceArea.js";
-import networkService from "@arcgis/core/rest/networkService.js";
+import * as networkService from "@arcgis/core/rest/networkService.js";
 // import TravelMode from "@arcgis/core/rest/support/TravelMode.js";
 
 @Component({
@@ -70,14 +70,15 @@ export class HubCompassMap {
   }
   // Create the location graphic
   private createGraphic(geometry) {
+    let markerSymbol = {
+      type: "simple-marker",
+      color: "white",
+      size: 8
+    }
     // Create a and add the point
     const graphic = new Graphic({
       geometry,
-      symbol: {
-        // type: "simple-marker",
-        color: "white",
-        // size: 8
-      }
+      symbol: markerSymbol
     });
     this.mapView.graphics.add(graphic);
     return graphic;
@@ -90,7 +91,7 @@ export class HubCompassMap {
         (travelMode) => travelMode.name === "Walking Distance"
       );
     }
-
+    console.debug('travelMode', this.travelMode)
     const serviceAreaParameters = new ServiceAreaParameters({
       facilities: new FeatureSet({
         features: [locationFeature]
