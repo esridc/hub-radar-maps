@@ -1,0 +1,13 @@
+:host { 
+}
+
+#mapDiv {
+  height: 100%;
+  width: 100%;
+}
+
+#mapWrapper {
+  display: block;
+  height: 100%;
+  width: 100%;
+}

@@ -4,33 +4,46 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
-  <title>REPLACE_PROJECT_NAME</title>
+  <title>hub-compass-maps</title>
 
-  <script type="module" src="./build/REPLACE_PROJECT_NAME.esm.js"></script>
-  <script nomodule src="./build/REPLACE_PROJECT_NAME.js"></script>
+  <script type="module" src="./build/hub-compass-maps.esm.js"></script>
+  <script nomodule src="./build/hub-compass-maps.js"></script>
 
   <link
     rel="stylesheet"
     type="text/css"
-    href="https://js.arcgis.com/calcite-components/1.0.7/calcite.css"
+    href="https://js.arcgis.com/calcite-components/1.4.3/calcite.css"
   />
+  <link rel="stylesheet" href="https://js.arcgis.com/4.27/esri/themes/light/main.css">
+  <script src="https://js.arcgis.com/4.27/"></script>
+
 </head>
 
 <body>
   <!-- Delayed render so we can get the API key from URL parameters -->
+  <!-- <div id="viewDiv"></div> -->
   <div id="placeholder"></div>
 
   <style>
-    body {
+    html, body, #viewDiv, #placeholder {
       font-family: sans-serif;
-      margin: 0;
       padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
     }
+    #placeholder, hub-compass-map {
+      display: block;
+      height: 100%;
+      width: 100%;
+      border: 1px solid purple;
+    }
+
   </style>
 
   <script>
     // Dynamically add the component so we can set URL or object properties
-    const componentName = "REPLACE_PROJECT_NAME";
+    const componentName = "hub-compass-map";
 
     const placeholderEl = document.getElementById("placeholder");
     const componentEl = document.createElement( componentName );
@@ -39,9 +52,13 @@
     // Change for specific component properties
     // componentEl.query = urlParams.get('query');
     // componentEl.innerHTML = "Slot text";
+    componentEl.center = [-77, 38.9];
+    componentEl.zoom = 12;
+    componentEl.datasetIds = ["f6c3c04113944f23a7993f2e603abaf2", "4ac321b2d409438ebd76a6569ad94034"];
     
     placeholderEl.appendChild(componentEl);
   </script>
+
 </body>
 
 </html>
