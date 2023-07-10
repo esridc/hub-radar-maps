@@ -7,10 +7,29 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
     interface HubCompassMap {
+        /**
+          * Optional [longitude, latitude] map center
+         */
         "center": [number, number];
+        /**
+          * Optional array of datasets to add to map
+         */
         "datasetIds": string[];
+        /**
+          * Optional Map id to display
+         */
         "mapId": string;
+        /**
+          * Optional location to calculate service center. Changing this will update the point
+         */
+        "serviceAreaPoint": any;
+        /**
+          * Optional travel mode: walking, etc.  TODO fix travel mode type and values
+         */
         "travelMode": any;
+        /**
+          * Optional map zoom level
+         */
         "zoom": number;
     }
 }
@@ -27,10 +46,29 @@ declare global {
 }
 declare namespace LocalJSX {
     interface HubCompassMap {
+        /**
+          * Optional [longitude, latitude] map center
+         */
         "center"?: [number, number];
+        /**
+          * Optional array of datasets to add to map
+         */
         "datasetIds"?: string[];
+        /**
+          * Optional Map id to display
+         */
         "mapId"?: string;
+        /**
+          * Optional location to calculate service center. Changing this will update the point
+         */
+        "serviceAreaPoint"?: any;
+        /**
+          * Optional travel mode: walking, etc.  TODO fix travel mode type and values
+         */
         "travelMode"?: any;
+        /**
+          * Optional map zoom level
+         */
         "zoom"?: number;
     }
     interface IntrinsicElements {

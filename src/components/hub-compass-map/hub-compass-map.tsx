@@ -1,4 +1,4 @@
-import { Component, Host, Prop, h } from '@stencil/core';
+import { Component, Host, Prop, Watch, h } from '@stencil/core';
 import Map from "@arcgis/core/Map.js";
 import MapView from "@arcgis/core/views/MapView.js";
 import esriConfig from "@arcgis/core/config.js";
@@ -17,17 +17,65 @@ import * as networkService from "@arcgis/core/rest/networkService.js";
 })
 export class HubCompassMap {
 
+  /**
+   * Optional Map id to display
+   */
   @Prop() mapId: string = null;
+
+  /**
+   * Optional [longitude, latitude] map center
+   */
   @Prop() center: [number, number] = [0,0];
-  @Prop() datasetIds: string[] = [];
+  
+  /**
+   * Optional map zoom level
+   */
   @Prop() zoom: number = 10;
-  // TODO fix travel mode
-  @Prop() travelMode: any = null;
+
+  /**
+   * Optional array of datasets to add to map
+   */
+  @Prop() datasetIds: string[] = [];
+
+  /**
+   * TODO: only add new datasets, likely by diffing with old list
+   */
+  @Watch('datasetIds')
+  updateDatasets(newDatasetIds) {
+    newDatasetIds.forEach((datasetId) => {
+      const datasetLayer = new FeatureLayer({
+        portalItem: {
+          id: datasetId
+        }
+      });
+
+      console.debug('adding dataset layer', {datasetId, datasetLayer});
+      
+      this.webMap.add(datasetLayer);
+    });
+  }
+
+  /**
+   * Optional travel mode: walking, etc.
+   *  TODO fix travel mode type and values
+   */
+  @Prop({mutable: true, reflect: true}) travelMode: any = null;
+
+  /**
+   * Optional location to calculate service center.
+   * Changing this will update the point
+   */
+  @Prop({mutable: true, reflect: true}) serviceAreaPoint = null;
+
+  @Watch('serviceAreaPoint')
+  updateServiceArea(newServicePoint) {
+    this.createServiceAreas(newServicePoint);
+  }
+
   mapEl: HTMLDivElement;
   webMap: Map;
   mapView: MapView;
   serviceAreaUrl = "https://route-api.arcgis.com/arcgis/rest/services/World/ServiceAreas/NAServer/ServiceArea_World";
-
   componentDidRender() {
     esriConfig.apiKey = "AAPK42ebee6b2e134974bffd492cdf7f365dXxAPfRSdf05kJ3AtuEevSfJqUEZ34Vhy2UfrxPtSXrQAfwL04Zij-GfOEQU9OD_9";
 
@@ -42,24 +90,18 @@ export class HubCompassMap {
     });
 
     this.mapView.when(() => {
-      this.createServiceAreas(this.mapView.center);
+      // this.createServiceAreas(this.mapView.center);
+      const graphic = this.createGraphic(this.mapView.center);
+      this.mapView.graphics.addMany([graphic], 0);
+
     });
+
     this.mapView.on("click", (event) => {
       this.createServiceAreas(event.mapPoint);
-    });    
+    });
     
     if(!!this.datasetIds && this.datasetIds.length > 0) {
-      this.datasetIds.forEach((datasetId) => {
-        const datasetLayer = new FeatureLayer({
-          portalItem: {
-            id: datasetId
-          }
-        });
-
-        console.debug('adding dataset layer', {datasetId, datasetLayer});
-        
-        this.webMap.add(datasetLayer);
-      });
+      this.updateDatasets(this.datasetIds)
     }
   }
   private createServiceAreas(point) {
