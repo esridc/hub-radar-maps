@@ -24,6 +24,10 @@ export namespace Components {
          */
         "serviceAreaPoint": any;
         /**
+          * Option to show search input
+         */
+        "showSearch": boolean;
+        /**
           * Optional travel mode: walking, etc.  TODO fix travel mode type and values
          */
         "travelMode": any;
@@ -62,6 +66,10 @@ declare namespace LocalJSX {
           * Optional location to calculate service center. Changing this will update the point
          */
         "serviceAreaPoint"?: any;
+        /**
+          * Option to show search input
+         */
+        "showSearch"?: boolean;
         /**
           * Optional travel mode: walking, etc.  TODO fix travel mode type and values
          */

@@ -9,6 +9,7 @@ import FeatureSet from "@arcgis/core/rest/support/FeatureSet.js";
 import * as serviceArea from "@arcgis/core/rest/serviceArea.js";
 import * as networkService from "@arcgis/core/rest/networkService.js";
 // import TravelMode from "@arcgis/core/rest/support/TravelMode.js";
+import Search from "@arcgis/core/widgets/Search";
 
 @Component({
   tag: 'hub-compass-map',
@@ -37,6 +38,10 @@ export class HubCompassMap {
    */
   @Prop() datasetIds: string[] = [];
 
+  /** 
+   * Option to show search input
+   */
+  @Prop() showSearch: boolean = true;
   /**
    * TODO: only add new datasets, likely by diffing with old list
    */
@@ -89,7 +94,19 @@ export class HubCompassMap {
       container: this.mapEl // Div element
     });
 
+    if(this.showSearch) {
+      const searchWidget = new Search({
+        view: this.mapView
+      });
+
+      // Add the search widget to the top right corner of the view
+      this.mapView.ui.add(searchWidget, {
+        position: "top-right"
+      });
+    }
     this.mapView.when(() => {
+      // this.mapView.ui.components = (["compass", "zoom", "search"]);
+
       // this.createServiceAreas(this.mapView.center);
       const graphic = this.createGraphic(this.mapView.center);
       this.mapView.graphics.addMany([graphic], 0);
