@@ -14,6 +14,8 @@
     type="text/css"
     href="https://js.arcgis.com/calcite-components/1.4.3/calcite.css"
   />
+  <script type="module" src="https://js.arcgis.com/calcite-components/1.4.3/calcite.esm.js"></script>
+
   <link rel="stylesheet" href="https://js.arcgis.com/4.27/esri/themes/light/main.css">
   <!-- <script src="https://js.arcgis.com/4.27/"></script> -->
 
@@ -23,6 +25,20 @@
   <!-- Delayed render so we can get the API key from URL parameters -->
   <!-- <div id="viewDiv"></div> -->
   <div id="placeholder"></div>
+  <div
+    id="addDatasets"
+  >
+    <calcite-button 
+      onclick="addDatasets('f6c3c04113944f23a7993f2e603abaf2')"
+    >
+      Add Trees
+    </calcite-button>
+    <calcite-button 
+      onclick="addDatasets('4ac321b2d409438ebd76a6569ad94034')"
+    >
+      Add Schools
+    </calcite-button>
+  </div>
 
   <style>
     html, body, #viewDiv, #placeholder {
@@ -38,13 +54,22 @@
       width: 100%;
       border: 1px solid purple;
     }
+    #addDatasets {
+      position: absolute;
+      z-index: 100;
+      bottom: 20px;
+      left: 20px;
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+    }
 
   </style>
 
   <script>
     // Dynamically add the component so we can set URL or object properties
     const componentName = "hub-compass-map";
-
+    const datasets = ["f6c3c04113944f23a7993f2e603abaf2", "4ac321b2d409438ebd76a6569ad94034"]
     const placeholderEl = document.getElementById("placeholder");
     const componentEl = document.createElement( componentName );
 
@@ -54,8 +79,14 @@
     // componentEl.innerHTML = "Slot text";
     componentEl.center = [-77, 38.9];
     componentEl.zoom = 12;
-    componentEl.datasetIds = ["f6c3c04113944f23a7993f2e603abaf2", "4ac321b2d409438ebd76a6569ad94034"];
+    componentEl.datasetIds = ['7c6443b23d364689be9b34324e6c677d'];
+    componentEl.showLayers = true;
+    componentEl.showSearch = true;
     
+    function addDatasets(datasetId) {
+      console.log("addDatasets", componentEl.datasetIds.concat([datasetId]))
+      componentEl.datasetIds = componentEl.datasetIds.concat([datasetId]);
+    }
     placeholderEl.appendChild(componentEl);
   </script>
 

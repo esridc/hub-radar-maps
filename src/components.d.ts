@@ -24,6 +24,10 @@ export namespace Components {
          */
         "serviceAreaPoint": any;
         /**
+          * Option to show layers
+         */
+        "showLayers": boolean;
+        /**
           * Option to show search input
          */
         "showSearch": boolean;
@@ -66,6 +70,10 @@ declare namespace LocalJSX {
           * Optional location to calculate service center. Changing this will update the point
          */
         "serviceAreaPoint"?: any;
+        /**
+          * Option to show layers
+         */
+        "showLayers"?: boolean;
         /**
           * Option to show search input
          */

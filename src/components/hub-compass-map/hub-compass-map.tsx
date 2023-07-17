@@ -10,6 +10,7 @@ import * as serviceArea from "@arcgis/core/rest/serviceArea.js";
 import * as networkService from "@arcgis/core/rest/networkService.js";
 // import TravelMode from "@arcgis/core/rest/support/TravelMode.js";
 import Search from "@arcgis/core/widgets/Search";
+import LayerList from "@arcgis/core/widgets/LayerList";
 
 @Component({
   tag: 'hub-compass-map',
@@ -39,25 +40,42 @@ export class HubCompassMap {
   @Prop() datasetIds: string[] = [];
 
   /** 
+   * Option to show layers
+   */
+  @Prop() showLayers: boolean = true;
+
+  /** 
    * Option to show search input
    */
   @Prop() showSearch: boolean = true;
+
   /**
    * TODO: only add new datasets, likely by diffing with old list
    */
   @Watch('datasetIds')
-  updateDatasets(newDatasetIds) {
-    newDatasetIds.forEach((datasetId) => {
-      const datasetLayer = new FeatureLayer({
-        portalItem: {
-          id: datasetId
-        }
-      });
+  async updateDatasets(newDatasetIds, oldDatasetIds) {
+    console.debug("hub-compass-map: updateDatasets", {newDatasetIds, oldDatasetIds})
+    newDatasetIds.forEach(async (datasetId) => {
 
-      console.debug('adding dataset layer', {datasetId, datasetLayer});
-      
-      this.webMap.add(datasetLayer);
+      // Don't add duplicate layers
+      if(oldDatasetIds.includes(datasetId)) {
+        console.debug("hub-compass-map: updateDatasets duplicate", {datasetId})
+        return;
+      }
+      console.debug("hub-compass-map: updateDatasets adding", {datasetId})
+      this.addDatasetToMap(datasetId)
     });
+  }
+
+  async addDatasetToMap(datasetId) {
+
+    const datasetLayer = await new FeatureLayer({
+      portalItem: {
+        id: datasetId
+      }
+    });
+    
+    await this.webMap.add(datasetLayer);
   }
 
   /**
@@ -81,7 +99,7 @@ export class HubCompassMap {
   webMap: Map;
   mapView: MapView;
   serviceAreaUrl = "https://route-api.arcgis.com/arcgis/rest/services/World/ServiceAreas/NAServer/ServiceArea_World";
-  componentDidRender() {
+  componentDidLoad() {
     esriConfig.apiKey = "AAPK42ebee6b2e134974bffd492cdf7f365dXxAPfRSdf05kJ3AtuEevSfJqUEZ34Vhy2UfrxPtSXrQAfwL04Zij-GfOEQU9OD_9";
 
     this.webMap = new Map({
@@ -93,7 +111,7 @@ export class HubCompassMap {
       zoom: this.zoom, // Zoom level
       container: this.mapEl // Div element
     });
-
+    // Search
     if(this.showSearch) {
       const searchWidget = new Search({
         view: this.mapView
@@ -104,6 +122,16 @@ export class HubCompassMap {
         position: "top-right"
       });
     }
+    // LayerList
+    if(this.showLayers) {
+      const layerList = new LayerList({
+        view: this.mapView
+      });
+
+      // Add widget to the top right corner of the view
+      this.mapView.ui.add(layerList, "top-right");
+    }
+
     this.mapView.when(() => {
       // this.mapView.ui.components = (["compass", "zoom", "search"]);
 
@@ -118,7 +146,9 @@ export class HubCompassMap {
     });
     
     if(!!this.datasetIds && this.datasetIds.length > 0) {
-      this.updateDatasets(this.datasetIds)
+      this.datasetIds.forEach((datasetId) => {
+        this.addDatasetToMap(datasetId);
+      })
     }
   }
   private createServiceAreas(point) {
