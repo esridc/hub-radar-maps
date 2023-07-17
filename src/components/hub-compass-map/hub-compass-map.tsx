@@ -67,6 +67,21 @@ export class HubCompassMap {
     });
   }
 
+  @Watch('center')
+  async updateCenter(newCenter) {
+    this.mapView.goTo({
+      center: newCenter,
+      zoom: this.zoom
+    });
+  }
+  @Watch('zoom')
+  async updateZoom(newZoom) {
+    this.mapView.goTo({
+      center: this.center,
+      zoom: newZoom
+    });
+  }
+
   async addDatasetToMap(datasetId) {
 
     const datasetLayer = await new FeatureLayer({
