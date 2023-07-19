@@ -39,10 +39,16 @@
       Add Schools
     </calcite-button>
     <calcite-button 
+      onclick="addDatasets('3314d4acaaf84410aba319be81d69041')"
+    >
+      Add Table
+    </calcite-button>
+    <calcite-button 
       onclick="moveMap([-75,39], 10)"
     >
       Move Map
-    </calcite-button>    
+    </calcite-button>
+    
   </div>
 
   <style>
@@ -87,6 +93,7 @@
     componentEl.datasetIds = ['7c6443b23d364689be9b34324e6c677d'];
     componentEl.showLayers = true;
     componentEl.showSearch = true;
+    componentEl.showTable = true;
 
     function moveMap(center, zoom) {
       componentEl.center = center;

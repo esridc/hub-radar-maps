@@ -28,9 +28,17 @@ export namespace Components {
          */
         "showLayers": boolean;
         /**
+          * Option to show legend
+         */
+        "showLegend": boolean;
+        /**
           * Option to show search input
          */
         "showSearch": boolean;
+        /**
+          * Option to show data table
+         */
+        "showTable": boolean;
         /**
           * Optional travel mode: walking, etc.  TODO fix travel mode type and values
          */
@@ -75,9 +83,17 @@ declare namespace LocalJSX {
          */
         "showLayers"?: boolean;
         /**
+          * Option to show legend
+         */
+        "showLegend"?: boolean;
+        /**
           * Option to show search input
          */
         "showSearch"?: boolean;
+        /**
+          * Option to show data table
+         */
+        "showTable"?: boolean;
         /**
           * Optional travel mode: walking, etc.  TODO fix travel mode type and values
          */

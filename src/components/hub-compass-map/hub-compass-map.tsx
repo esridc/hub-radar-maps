@@ -11,6 +11,8 @@ import * as networkService from "@arcgis/core/rest/networkService.js";
 // import TravelMode from "@arcgis/core/rest/support/TravelMode.js";
 import Search from "@arcgis/core/widgets/Search";
 import LayerList from "@arcgis/core/widgets/LayerList";
+import Legend from "@arcgis/core/widgets/Legend";
+import FeatureTable from "@arcgis/core/widgets/FeatureTable";
 
 @Component({
   tag: 'hub-compass-map',
@@ -38,6 +40,16 @@ export class HubCompassMap {
    * Optional array of datasets to add to map
    */
   @Prop() datasetIds: string[] = [];
+
+  /** 
+   * Option to show legend
+   */
+  @Prop() showLegend: boolean = true;
+
+  /**
+   * Option to show data table
+   */
+  @Prop() showTable: boolean = true;
 
   /** 
    * Option to show layers
@@ -91,6 +103,9 @@ export class HubCompassMap {
     });
     
     await this.webMap.add(datasetLayer);
+    if(this.showTable) {
+      await this.addTable(datasetLayer);
+    }
   }
 
   /**
@@ -111,6 +126,7 @@ export class HubCompassMap {
   }
 
   mapEl: HTMLDivElement;
+  tableEl: HTMLDivElement;
   webMap: Map;
   mapView: MapView;
   serviceAreaUrl = "https://route-api.arcgis.com/arcgis/rest/services/World/ServiceAreas/NAServer/ServiceArea_World";
@@ -136,6 +152,15 @@ export class HubCompassMap {
       this.mapView.ui.add(searchWidget, {
         position: "top-right"
       });
+    }
+    if(this.showLegend) {
+      const legend = new Legend({
+        view: this.mapView,
+        layerInfos:[]
+      });
+
+      // Add widget to the bottom right corner of the view
+      this.mapView.ui.add(legend, "bottom-right");      
     }
     // LayerList
     if(this.showLayers) {
@@ -166,6 +191,24 @@ export class HubCompassMap {
       })
     }
   }
+  private async addTable(featureLayer) {
+    return new FeatureTable({
+      view: this.mapView,
+      layer: featureLayer,
+      visibleElements: {
+        // Autocast to VisibleElements
+        menuItems: {
+          clearSelection: true,
+          refreshData: true,
+          toggleColumns: true,
+          selectedRecordsShowAllToggle: true,
+          zoomToSelection: true
+        }
+      },
+      container: this.tableEl
+    });
+  }
+
   private createServiceAreas(point) {
     // Remove any existing graphics
     this.mapView.graphics.removeAll();
@@ -225,10 +268,16 @@ export class HubCompassMap {
       <Host>
         <slot></slot>
         <div id="mapWrapper">
-        <div 
-          ref={(el) => this.mapEl = el as HTMLDivElement}
-          id="mapDiv"></div>
+          <div 
+            ref={(el) => this.mapEl = el as HTMLDivElement}
+            id="mapDiv">
           </div>
+          <div
+            ref={(el) => this.tableEl = el}
+            id="tableDiv"
+          ></div>
+        </div>
+        
       </Host>
     );
   }
