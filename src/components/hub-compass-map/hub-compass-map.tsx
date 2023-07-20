@@ -175,9 +175,7 @@ export class HubCompassMap {
     this.webMap.add(datasetLayer);
     this.datasetEls[datasetId] ||= {}
     this.datasetEls[datasetId].layer = datasetLayer;
-    // if(this.showTable) {
-    //   this.addTable(datasetId, datasetLayer);
-    // }
+
   }
 
   /**
@@ -185,11 +183,13 @@ export class HubCompassMap {
    */
   async componentDidRender() {
     console.debug("hub-compass-map: componentDidRender", this.datasetEls)
-    Object.keys(this.datasetEls).forEach((datasetId) => {
-      if(!this.datasetEls[datasetId].table) {
-        this.addTable(datasetId, this.datasetEls[datasetId].layer)
-      }
-    })
+    if(this.showTable) {
+      Object.keys(this.datasetEls).forEach((datasetId) => {
+        if(!this.datasetEls[datasetId].table) {
+          this.addTable(datasetId, this.datasetEls[datasetId].layer)
+        }
+      })
+    }
 
   }
 
@@ -374,7 +374,7 @@ export class HubCompassMap {
             ref={(el) => this.tableEl = el}
             id="tableDiv"
           >
-            {this.renderTables(this.datasetIds)}
+            {this.showTable ? this.renderTables(this.datasetIds) : ''}
           </div>
         </div>
         
