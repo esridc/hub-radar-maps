@@ -211,18 +211,6 @@ export class HubCompassMap {
       zoom: this.zoom, // Zoom level
       container: this.mapEl // Div element
     });
-    if(this.showBasemaps) {
-      this.mapView.ui.add([
-        new Expand({
-            content: new BasemapGallery({
-              view: this.mapView
-            }),
-            view: this.mapView,
-            expandIcon: "basemap",
-            group: "top-right"
-          })
-      ], {position: "top-right"});
-    }
     // Search
     if(this.showSearch) {
       const searchWidget = new Search({
@@ -233,7 +221,8 @@ export class HubCompassMap {
       this.mapView.ui.add(searchWidget, {
         position: "top-right"
       });
-    }
+    }    
+
     if(this.showLegend) {
       const legend = new Legend({
         view: this.mapView,
@@ -261,6 +250,18 @@ export class HubCompassMap {
           group: "top-right"
         }),
         {position: "top-right"});
+    }
+    if(this.showBasemaps) {
+      this.mapView.ui.add([
+        new Expand({
+            content: new BasemapGallery({
+              view: this.mapView
+            }),
+            view: this.mapView,
+            expandIcon: "basemap",
+            group: "top-right"
+          })
+      ], {position: "top-right"});
     }
 
     this.mapView.when(() => {
