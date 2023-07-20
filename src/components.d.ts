@@ -16,13 +16,14 @@ export namespace Components {
           * Optional array of datasets to add to map
          */
         "datasetIds": string[];
+        "filterTables": (geometry: any) => Promise<void>;
         /**
           * Optional Map id to display
          */
         "mapId": string;
         "saveMap": () => Promise<void>;
         /**
-          * Service area distances (time?)
+          * Service area distances in kilomenters Default to 1,5,10 minute based on 4.54km/hr speed
          */
         "serviceAreaBreaks": number[];
         /**
@@ -89,7 +90,7 @@ declare namespace LocalJSX {
          */
         "mapId"?: string;
         /**
-          * Service area distances (time?)
+          * Service area distances in kilomenters Default to 1,5,10 minute based on 4.54km/hr speed
          */
         "serviceAreaBreaks"?: number[];
         /**

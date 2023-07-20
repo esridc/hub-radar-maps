@@ -17,6 +17,7 @@ import FeatureTable from "@arcgis/core/widgets/FeatureTable";
 import Expand from "@arcgis/core/widgets/Expand";
 import BasemapGallery from "@arcgis/core/widgets/BasemapGallery";
 // import PortalItem from "@arcgis/core/portal/PortalItem";
+// import reactiveUtils from "@arcgis/core/reactiveUtils";
 
 @Component({
   tag: 'hub-compass-map',
@@ -24,7 +25,7 @@ import BasemapGallery from "@arcgis/core/widgets/BasemapGallery";
   shadow: false,
 })
 export class HubCompassMap {
-
+  
   /**
    * Optional Map id to display
    */
@@ -76,9 +77,10 @@ export class HubCompassMap {
   @Prop() showServiceAreas: boolean = true;
 
   /**
-   * Service area distances (time?)
+   * Service area distances in kilomenters
+   * Default to 1,5,10 minute based on 4.54km/hr speed
    */
-  @Prop() serviceAreaBreaks: number[] = [1];
+  @Prop() serviceAreaBreaks: number[] = [0.07, 0.37, 0.75];
 
   /**
    * Optional travel mode: walking, etc.
@@ -125,6 +127,8 @@ export class HubCompassMap {
       center: newCenter,
       zoom: this.zoom
     });
+    const graphic = this.createGraphic(this.mapView.center);
+    this.mapView.graphics.addMany([graphic], 0);
   }
   @Watch('zoom')
   async updateZoom(newZoom) {
@@ -233,6 +237,7 @@ export class HubCompassMap {
       this.mapView.ui.add(new Expand({
         content: legend,
         view: this.mapView,
+        expanded: true,
         group: "top-right"
       }), "bottom-right");      
     }
@@ -278,12 +283,34 @@ export class HubCompassMap {
         this.createServiceAreas(event.mapPoint);
       }
     });
+
+    // reactiveUtils.when(
+    //   () => this.mapView.stationary === true,
+    //   () => {
+    //     // Get the new extent of view/map whenever map is updated.
+    //     if (this.mapView.extent) {
+    //       // Filter out and show only the visible features in the feature table.
+    //       this.filterTables(this.mapView.extent);
+    //     }
+    //   },
+    //   {
+    //     initial: true
+    //   }
+    // );
     
     if(!!this.datasetIds && this.datasetIds.length > 0) {
       this.datasetIds.forEach((datasetId) => {
         this.addDatasetToMap(datasetId);
       })
     }
+  }
+
+  @Method()
+  public async filterTables(geometry) {
+    Object.keys(this.datasetEls).forEach((datasetId) => {
+      const featureTable = this.datasetEls[datasetId].table;
+      featureTable.filterGeometry = geometry;
+    })    
   }
   private async addTable(datasetId, featureLayer) {
     console.debug("addTable: ", {datasetId, featureLayer, datasetEls: this.datasetEls})
@@ -332,6 +359,7 @@ export class HubCompassMap {
   async findServiceArea(locationFeature) {
     if (!this.travelMode) {
       const networkDescription = await networkService.fetchServiceDescription(this.serviceAreaUrl);
+      console.debug("networkDescription.supportedTravelModes", {modes: networkDescription.supportedTravelModes})
       this.travelMode = networkDescription.supportedTravelModes.find(
         (travelMode) => travelMode.name === "Walking Distance"
       );
@@ -348,6 +376,10 @@ export class HubCompassMap {
       trimOuterPolygon: true
     });
     const { serviceAreaPolygons } = await serviceArea.solve(this.serviceAreaUrl, serviceAreaParameters);
+    
+    console.debug("hub-compass-map: findServiceArea", {geom: serviceAreaPolygons.features[0]})
+    this.filterTables(serviceAreaPolygons.features[0].geometry);
+    
     this.addServiceAreas(serviceAreaPolygons);
   }
 
@@ -355,7 +387,7 @@ export class HubCompassMap {
     const graphics = serviceAreaPolygons.features.map((g)=>{
       g.symbol = {
         type: "simple-fill",
-        color: "rgba(255, 0, 0, 0.25)"
+        color: `rgba(${Math.floor(Math.random() * 200)}, 0, 0, 0.25)`
       }
       return g
     })
