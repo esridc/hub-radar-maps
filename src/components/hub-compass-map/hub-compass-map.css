@@ -4,8 +4,17 @@
 #mapDiv {
   height: 100%;
   width: 100%;
+  flex-grow: 3;
 }
 
+#tableDiv {
+  flex-grow: 1;
+  
+}
+.table {
+  height: 100%;
+  min-height: 300px;
+}
 #mapWrapper {
   display: flex;
   flex-direction: column;

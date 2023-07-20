@@ -408,7 +408,7 @@ export class HubCompassMap {
   }
   renderTableView(datasetId:string) {
     console.debug("renderTableView: ", {datasetId, datasetEls: this.datasetEls})
-    const output =<calcite-tab><div class="table" ref={(el) => {this.datasetEls[datasetId].view = el}}></div></calcite-tab>;
+    const output =<calcite-tab class="table" ><div ref={(el) => {this.datasetEls[datasetId].view = el}}></div></calcite-tab>;
     return output
   }
 }
