@@ -7,6 +7,7 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
     interface HubCompassMap {
+        "addDatasetToMap": (datasetId: any) => Promise<void>;
         /**
           * Optional [longitude, latitude] map center
          */
@@ -19,10 +20,19 @@ export namespace Components {
           * Optional Map id to display
          */
         "mapId": string;
+        "saveMap": () => Promise<void>;
+        /**
+          * Service area distances (time?)
+         */
+        "serviceAreaBreaks": number[];
         /**
           * Optional location to calculate service center. Changing this will update the point
          */
         "serviceAreaPoint": any;
+        /**
+          * Option to show basemap selection
+         */
+        "showBasemaps": boolean;
         /**
           * Option to show layers
          */
@@ -35,6 +45,10 @@ export namespace Components {
           * Option to show search input
          */
         "showSearch": boolean;
+        /**
+          * Option to show service areas on map click
+         */
+        "showServiceAreas": boolean;
         /**
           * Option to show data table
          */
@@ -75,9 +89,17 @@ declare namespace LocalJSX {
          */
         "mapId"?: string;
         /**
+          * Service area distances (time?)
+         */
+        "serviceAreaBreaks"?: number[];
+        /**
           * Optional location to calculate service center. Changing this will update the point
          */
         "serviceAreaPoint"?: any;
+        /**
+          * Option to show basemap selection
+         */
+        "showBasemaps"?: boolean;
         /**
           * Option to show layers
          */
@@ -90,6 +112,10 @@ declare namespace LocalJSX {
           * Option to show search input
          */
         "showSearch"?: boolean;
+        /**
+          * Option to show service areas on map click
+         */
+        "showServiceAreas"?: boolean;
         /**
           * Option to show data table
          */

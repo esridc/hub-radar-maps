@@ -28,6 +28,11 @@
   <div
     id="addDatasets"
   >
+  <calcite-button 
+      onclick="addDatasets('7c6443b23d364689be9b34324e6c677d')"
+    >
+      Add Trash
+    </calcite-button>
     <calcite-button 
       onclick="addDatasets('f6c3c04113944f23a7993f2e603abaf2')"
     >
@@ -48,6 +53,11 @@
     >
       Move Map
     </calcite-button>
+    <calcite-button 
+      onclick="saveMap()"
+    >
+      Save Map
+    </calcite-button>    
     
   </div>
 
@@ -69,7 +79,7 @@
       position: absolute;
       z-index: 100;
       bottom: 20px;
-      left: 20px;
+      right: 20px;
       display: flex;
       flex-direction: row;
       gap: 10px;
@@ -90,7 +100,7 @@
     // componentEl.innerHTML = "Slot text";
     componentEl.center = [-77, 38.9];
     componentEl.zoom = 12;
-    componentEl.datasetIds = ['7c6443b23d364689be9b34324e6c677d'];
+    componentEl.datasetIds = [];
     componentEl.showLayers = true;
     componentEl.showSearch = true;
     componentEl.showTable = true;
@@ -98,6 +108,9 @@
     function moveMap(center, zoom) {
       componentEl.center = center;
       componentEl.zoom = zoom;
+    }
+    function saveMap() {
+      componentEl.saveMap();
     }
 
     function addDatasets(datasetId) {
