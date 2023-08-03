@@ -1,18 +1,6 @@
-# ajturner-prototype-template
-Template for creating prototypes with Stencil.js and Calcite compnents
+# hub-radar-maps
 
-## Steps to use
-
-1. click "Use this Template" and "Create a new repository"
-1. clone repo to your developer machine
-1. find and replace the string `hub-compass-maps` with your project name, e.g. `hub-chatbot`
-1. install dependencies `npm i`
-1. copy Calcite assets `cp -r node_modules/@esri/calcite-components/dist/calcite/assets/* ./src/assets/`
-1. create new components with `npx stencil g`
-1. modify `src/index.html` for your component name and any props. 
-    - the example `index.html` uses script to add component to DOM so you can pass complex objects and other dynamic props
-1. run the server `npm run start`
-
+Web components for Hub Radar chatbot, built with ArcGIS Maps SDK for 
 
 ## Publish to Github Pages
 
