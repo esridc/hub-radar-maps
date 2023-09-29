@@ -21,7 +21,7 @@ export namespace Components {
           * Optional Map id to display
          */
         "mapId": string;
-        "saveMap": () => Promise<void>;
+        "saveMap": (title?: string, snippet?: string) => Promise<{ id: string; url: string; }>;
         /**
           * Service area distances in kilomenters Default to 1,5,10 minute based on 4.54km/hr speed
          */
@@ -30,6 +30,10 @@ export namespace Components {
           * Optional location to calculate service center. Changing this will update the point
          */
         "serviceAreaPoint": any;
+        /**
+          * OAuth2 session information https://developers.arcgis.com/javascript/latest/api-reference/esri-identity-IdentityManager.html#registerToken
+         */
+        "session": any;
         /**
           * Option to show basemap selection
          */
@@ -97,6 +101,10 @@ declare namespace LocalJSX {
           * Optional location to calculate service center. Changing this will update the point
          */
         "serviceAreaPoint"?: any;
+        /**
+          * OAuth2 session information https://developers.arcgis.com/javascript/latest/api-reference/esri-identity-IdentityManager.html#registerToken
+         */
+        "session"?: any;
         /**
           * Option to show basemap selection
          */

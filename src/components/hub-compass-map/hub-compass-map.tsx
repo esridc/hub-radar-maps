@@ -1,8 +1,7 @@
-import { Component, Host, Method, Prop, State, Watch, h } from '@stencil/core';
-import Map from "@arcgis/core/Map.js";
+import { Component, Event, EventEmitter, Host, Method, Prop, State, Watch, h } from '@stencil/core';
 import MapView from "@arcgis/core/views/MapView";
 import WebMap from "@arcgis/core/WebMap";
-import esriConfig from "@arcgis/core/config.js";
+// import esriConfig from "@arcgis/core/config.js";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
 import Graphic from "@arcgis/core/Graphic.js";
 import ServiceAreaParameters from "@arcgis/core/rest/support/ServiceAreaParameters.js";
@@ -18,6 +17,8 @@ import Expand from "@arcgis/core/widgets/Expand";
 import BasemapGallery from "@arcgis/core/widgets/BasemapGallery";
 // import PortalItem from "@arcgis/core/portal/PortalItem";
 // import reactiveUtils from "@arcgis/core/reactiveUtils";
+
+import IdentityManager from "@arcgis/core/identity/IdentityManager";
 
 @Component({
   tag: 'hub-compass-map',
@@ -94,6 +95,17 @@ export class HubCompassMap {
    */
   @Prop({mutable: true, reflect: true}) serviceAreaPoint = null;
 
+  /**
+   * OAuth2 session information
+   * https://developers.arcgis.com/javascript/latest/api-reference/esri-identity-IdentityManager.html#registerToken
+   */
+  @Prop() session = null;
+
+  /**
+   * If map has already been saved, update it.
+   */
+  @State() _item = null;
+  
   @Watch('serviceAreaPoint')
   updateServiceArea(newServicePoint) {
     this.createServiceAreas(newServicePoint);
@@ -138,34 +150,32 @@ export class HubCompassMap {
     });
   }
 
+  @Event() mapSaved: EventEmitter;
   @Method()
-  public async saveMap() {
-    console.debug("hub-compass-map: saveMap()")
-    const portalMap = new WebMap({
-      basemap: "topo-vector"
-    });
-    console.debug("hub-compass-map: saveMap(): portalMap", {portalMap})
-    // const portal = new Portal({
-    //   authMode: "immediate"
-    // });
-    // portal.load().then(() => {
-    // let item = new PortalItem({
-    //   title: "Empty WebMap",
-    //   tags: ["compass-map"],
-    //   type: "Web Map"
-    // });
-    
-    const item = {
-      title: "New Webmap",
-      tags: ["compass-map"]
-    };
-    const updateResult = await portalMap.updateFrom(this.mapView)
-    const saveResult = await portalMap.saveAs(item);
-      
-    // });    
-    console.debug("hub-compass-map: saveMap() complete", {portalMap, updateResult, saveResult})
-    
+  public async saveMap(title:string = "New webmap", snippet:string = "Created by Hub radar assistant") {
+    if(this._item === null) {
+      this._item = {
+        title: title,
+        snippet: snippet,
+        tags: ["hub-radar-map"]
+      };
+    }
+    console.debug("hub-compass-map: saveMap() start", {item: this._item})
+    const updateResult = await this.webMap.updateFrom(this.mapView)
+    const saveResult = await this.webMap.saveAs(this._item);
+  
+    const result = {id: saveResult.id, url: saveResult.url};
+    console.debug("hub-compass-map: saveMap() complete", {result, updateResult, saveResult})
+    this._item.id = saveResult.id;
+    this.mapSaved.emit(
+      {
+        item: this._item
+      }
+    )
+    return result;
   }
+
+
 
   @Method()
   public async addDatasetToMap(datasetId) {
@@ -180,6 +190,13 @@ export class HubCompassMap {
     this.datasetEls[datasetId] ||= {}
     this.datasetEls[datasetId].layer = datasetLayer;
 
+  }
+
+  /**
+   * Check for session token info
+   */
+  componentWillLoad() {
+    IdentityManager.registerToken(this.session);
   }
 
   /**
@@ -200,13 +217,13 @@ export class HubCompassMap {
 
   mapEl: HTMLDivElement;
   tableEl: HTMLDivElement;
-  webMap: Map;
+  webMap: WebMap;
   mapView: MapView;
   serviceAreaUrl = "https://route-api.arcgis.com/arcgis/rest/services/World/ServiceAreas/NAServer/ServiceArea_World";
   componentDidLoad() {
-    esriConfig.apiKey = "AAPK42ebee6b2e134974bffd492cdf7f365dXxAPfRSdf05kJ3AtuEevSfJqUEZ34Vhy2UfrxPtSXrQAfwL04Zij-GfOEQU9OD_9";
+    // esriConfig.apiKey = "AAPK42ebee6b2e134974bffd492cdf7f365dXxAPfRSdf05kJ3AtuEevSfJqUEZ34Vhy2UfrxPtSXrQAfwL04Zij-GfOEQU9OD_9";
 
-    this.webMap = new Map({
+    this.webMap = new WebMap({
       basemap: "arcgis-topographic" // Basemap layer service
     });
     this.mapView = new MapView({

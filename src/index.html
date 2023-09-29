@@ -109,8 +109,9 @@
       componentEl.center = center;
       componentEl.zoom = zoom;
     }
-    function saveMap() {
-      componentEl.saveMap();
+    async function saveMap() {
+      const result = await componentEl.saveMap();
+      alert
     }
 
     function addDatasets(datasetId) {
