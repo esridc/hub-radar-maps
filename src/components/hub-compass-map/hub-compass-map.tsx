@@ -60,7 +60,7 @@ export class HubCompassMap {
   /** 
    * Option to show layers
    */
-  @Prop() showLayers: boolean = true;
+  @Prop() showLayers: boolean = false;
 
   /** 
    * Option to show search input
@@ -70,12 +70,12 @@ export class HubCompassMap {
   /** 
    * Option to show basemap selection
    */
-  @Prop() showBasemaps: boolean = true;
+  @Prop() showBasemaps: boolean = false;
 
   /**
    * Option to show service areas on map click
    */
-  @Prop() showServiceAreas: boolean = true;
+  @Prop() showServiceAreas: boolean = false;
 
   /**
    * Service area distances in kilomenters
@@ -152,7 +152,7 @@ export class HubCompassMap {
 
   @Event() mapSaved: EventEmitter;
   @Method()
-  public async saveMap(title:string = "New webmap", snippet:string = "Created by Hub radar assistant") {
+  public async saveMap(title:string = "New webmap", snippet:string = "Created by Hub AI assistant") {
     if(this._item === null) {
       this._item = {
         title: title,
@@ -186,6 +186,8 @@ export class HubCompassMap {
       }
     });
 
+    datasetLayer.popupEnabled = true;
+
     this.webMap.add(datasetLayer);
     this.datasetEls[datasetId] ||= {}
     this.datasetEls[datasetId].layer = datasetLayer;
@@ -196,8 +198,10 @@ export class HubCompassMap {
    * Check for session token info
    */
   componentWillLoad() {
-    IdentityManager.registerToken(this.session);
-  }
+    if(!!this.session) {
+      IdentityManager.registerToken(this.session);
+    }
+  } 
 
   /**
    * Render tables after the elements are there
@@ -232,6 +236,18 @@ export class HubCompassMap {
       zoom: this.zoom, // Zoom level
       container: this.mapEl // Div element
     });
+    
+    this.mapView.popup.dockOptions = {
+        // Disables the dock button from the popup
+        buttonEnabled: false,
+        // Ignore the default sizes that trigger responsive docking
+        breakpoint: true
+      };
+    this.mapView.popup.defaultPopupTemplateEnabled = true;
+    this.mapView.popup.dockEnabled = true;
+    
+    
+
     // Search
     if(this.showSearch) {
       const searchWidget = new Search({

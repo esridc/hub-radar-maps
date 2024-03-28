@@ -68,6 +68,10 @@ export namespace Components {
         "zoom": number;
     }
 }
+export interface HubCompassMapCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLHubCompassMapElement;
+}
 declare global {
     interface HTMLHubCompassMapElement extends Components.HubCompassMap, HTMLStencilElement {
     }
@@ -93,6 +97,7 @@ declare namespace LocalJSX {
           * Optional Map id to display
          */
         "mapId"?: string;
+        "onMapSaved"?: (event: HubCompassMapCustomEvent<any>) => void;
         /**
           * Service area distances in kilomenters Default to 1,5,10 minute based on 4.54km/hr speed
          */

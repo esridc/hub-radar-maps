@@ -1,6 +1,6 @@
 # hub-radar-maps
 
-Web components for Hub Radar chatbot, built with ArcGIS Maps SDK for 
+Web components for Hub Radar chatbot, built with ArcGIS Maps SDK for Javascript
 
 ## Publish to Github Pages
 
