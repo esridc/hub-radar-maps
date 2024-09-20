@@ -1,0 +1,106 @@
+<!doctype html><html dir="ltr" lang="en"><head> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0"> <title>hub-compass-maps</title> <script type="module" src="./build/hub-compass-maps.esm.js"></script> <script nomodule="" src="./build/hub-compass-maps.js"></script> <link rel="stylesheet" type="text/css" href="https://js.arcgis.com/calcite-components/1.4.3/calcite.css"> <script type="module" src="https://js.arcgis.com/calcite-components/1.4.3/calcite.esm.js"></script> <link rel="stylesheet" href="https://js.arcgis.com/4.29/esri/themes/light/main.css"> <!-- <script src="https://js.arcgis.com/4.27/"></script> --> </head> <body> <!-- Delayed render so we can get the API key from URL parameters --> <!-- <div id="viewDiv"></div> --> <div id="placeholder"></div> <div id="addDatasets"> <calcite-button onclick="addFeatures()"> Add Features </calcite-button> <calcite-button onclick="addDatasets('7c6443b23d364689be9b34324e6c677d')"> Add Trash </calcite-button> <calcite-button onclick="addDatasets('f6c3c04113944f23a7993f2e603abaf2')"> Add Trees </calcite-button> <calcite-button onclick="addDatasets('4ac321b2d409438ebd76a6569ad94034')"> Add Schools </calcite-button> <calcite-button onclick="addDatasets('3314d4acaaf84410aba319be81d69041')"> Add Table </calcite-button> <calcite-button onclick="moveMap([-75,39], 10)"> Move Map </calcite-button> <calcite-button onclick="saveMap()"> Save Map </calcite-button> </div> <style>html, body, #viewDiv, #placeholder {
+      font-family: sans-serif;
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+    #placeholder, hub-compass-map {
+      display: block;
+      height: 100%;
+      width: 100%;
+      border: 1px solid purple;
+    }
+    #addDatasets {
+      position: absolute;
+      z-index: 100;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+    }</style> <script>
+    // Dynamically add the component so we can set URL or object properties
+    const componentName = "hub-compass-map";
+    const datasets = ["f6c3c04113944f23a7993f2e603abaf2", "4ac321b2d409438ebd76a6569ad94034"]
+    const placeholderEl = document.getElementById("placeholder");
+    const componentEl = document.createElement( componentName );
+
+    const urlParams = new URL(window.location).searchParams;
+    // Change for specific component properties
+    // componentEl.query = urlParams.get('query');
+    // componentEl.innerHTML = "Slot text";
+    componentEl.center = [-77, 38.9];
+    componentEl.zoom = 12;
+    componentEl.datasetIds = [];
+    componentEl.showLayers = true;
+    componentEl.showSearch = true;
+    componentEl.showTable = true;
+    componentEl.showServiceAreas = false;
+
+    function moveMap(center, zoom) {
+      componentEl.center = center;
+      componentEl.zoom = zoom;
+    }
+    async function saveMap() {
+      const result = await componentEl.saveMap();
+      alert
+    }
+
+    function addDatasets(datasetId) {
+      console.log("addDatasets", componentEl.datasetIds.concat([datasetId]))
+      componentEl.datasetIds = componentEl.datasetIds.concat([datasetId]);
+    }
+    placeholderEl.appendChild(componentEl);
+
+    componentEl.addEventListener("mapViewExtentChanged", (event) => {
+      console.log("mapViewExtentChanged", event.detail);
+    });
+    function addFeatures() {
+      const features = [];
+      for(let i = 0; i < 10; i++) {
+        let geometry = {
+          type: "point",  
+          x: -77.0 + i,
+          y: 38.9 + i,
+          spatialReference: {
+              "wkid": 4326
+          }
+        };
+
+        let symbol = {
+          type: "simple",  
+          color: [226, 119, 40]
+        };
+
+        let attributes = {
+          OBJECTID: i,
+          url: "TransCanada"
+        };
+
+        let graphic = {
+          geometry,
+          symbol,
+          attributes
+        };
+
+        features.push(graphic);
+      }
+      
+      const featureLayer = {
+        title: "Discussions",
+        source: features,
+        fields: [{
+          name: "OBJECTID",
+          type: "oid"
+        }, {
+          name: "url",
+          type: "string"
+        }],
+        objectIdField: "OBJECTID",
+        geometryType: "point"
+        // renderer: newFeatures.renderer
+      }
+      componentEl.features = featureLayer;
+    }
+  </script> </body></html>
